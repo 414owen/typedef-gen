@@ -1,0 +1,10 @@
+char -> c
+
+int -> i
+long long -> ll
+
+vector<1> v
+map<2> m
+pair<2> p
+
+// tuple<2-3> t

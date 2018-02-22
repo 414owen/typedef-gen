@@ -40,6 +40,7 @@ void interpret() {
 	size_t line_n = 0;
 	while (getline(infile ? in : cin, line)) {
 		vector<std::string> strs = spl(line, " ");
+		if (strs.size() && strs[0] == "//") continue;
 		if (strs.size() > 2) {
 			string type = strs[0];
 			int i;
@@ -86,6 +87,16 @@ void run() {
 
 			vector<int> inds(arity);
 			while (true) {
+				string newname = name + '<';
+				string newalias = alias;
+				for (int j = 0; j < arity - 1; j++) {
+					newname += get<1>(prev[inds[j]]) + ',';
+					newalias += get<1>(prev[inds[j]]);
+				}
+				newname  += get<1>(prev[inds.back()]) + '>';
+				newalias += get<1>(prev[inds.back()]);
+				next.push_back({newname, newalias});
+				put("typedef " + newname + ' ' + newalias + ';');
 				bool overflow = true;
 				for (int j = 0; j < arity; j++) {
 					if (inds[j] + 1 < prev.size()) {
@@ -97,18 +108,6 @@ void run() {
 					}
 				}
 				if (overflow) break;
-				else {
-					string newname = name + '<';
-					string newalias = alias;
-					for (int j = 0; j < arity - 1; j++) {
-						newname += get<1>(prev[inds[j]]) + ',';
-						newalias += get<1>(prev[inds[j]]);
-					}
-					newname  += get<1>(prev[inds.back()]) + '>';
-					newalias += get<1>(prev[inds.back()]);
-					next.push_back({newname, newalias});
-					put("typedef " + newname + ' ' + newalias + ';');
-				}
 			}
 		}
 		prev = next;
@@ -118,9 +117,9 @@ void run() {
 int main(int argc, char *argv[]) {
 	infile = argc > 1;
 	outfile = argc > 2;
-	if (argc > 1) in.open(argv[1]);
-	if (argc > 2) out.open(argv[2]);
-	if (argc > 3) layers = stoi(argv[3]);
+	if (argc > 1) layers = stoi(argv[1]);
+	if (argc > 2) in.open(argv[2]);
+	if (argc > 3) out.open(argv[3]);
 	interpret();
 	run();
 }
