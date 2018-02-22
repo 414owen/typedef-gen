@@ -1,8 +1,8 @@
-#include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <tuple>
 
 using namespace std;
 
@@ -19,8 +19,16 @@ vector<tuple<string, int, string>> types;
 
 vector<string> spl(string s, string delims) {
 	vector<string> res;
-	boost::split(res, s, boost::is_any_of(delims));
-	res.erase(std::remove(res.begin(), res.end(), ""), res.end());
+	string str = "";
+	for (char c : s) {
+		bool contains = false;
+		for (char d : delims) contains |= d == c;
+		if (contains && str.size() > 0) {
+			res.push_back(str);
+			str = "";
+		} else str += c;
+	}
+	if (str.size() > 0) res.push_back(str);
 	return res;
 }
 
