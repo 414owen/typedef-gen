@@ -5,6 +5,7 @@ char -> c
 
 int -> i
 long long -> ll
+double -> d
 
 std::vector<1> v
 std::map<2> m
