@@ -1,10 +1,11 @@
+#include <tuple>
+#include <map>
+
 char -> c
 
 int -> i
 long long -> ll
 
-vector<1> v
-map<2> m
-pair<2> p
-
-// tuple<2-3> t
+std::vector<1> v
+std::map<2> m
+std::tuple<2-3> t
