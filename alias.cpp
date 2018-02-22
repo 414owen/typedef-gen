@@ -16,11 +16,6 @@ vector<pair<string, string>> prims;
 // [name, arity, alias]
 vector<tuple<string, int, string>> types;
 
-
-void put(string s) {
-	(outfile ? out : cout) << s << endl;
-}
-
 void err(size_t line, string s) {
 	cerr << "Error on line: " << line << " " << s << endl;
 	exit(1);
@@ -70,53 +65,56 @@ void interpret() {
 	}
 }
 
+vector<pair<string, string>> nextLayer(vector<pair<string, string>> prev) {
+	vector<pair<string, string>> next;
+	for (auto el : types) {
+		string name = get<0>(el);
+		int arity = get<1>(el);
+		string alias = get<2>(el);
+
+		vector<int> inds(arity);
+		while (true) {
+			string newname = name + '<';
+			string newalias = alias;
+			for (int j = 0; j < arity - 1; j++) {
+				newname += get<1>(prev[inds[j]]) + ',';
+				newalias += get<1>(prev[inds[j]]);
+			}
+			newname  += get<1>(prev[inds.back()]) + '>';
+			newalias += get<1>(prev[inds.back()]);
+			next.push_back({newname, newalias});
+			bool overflow = true;
+			for (int j = 0; j < arity; j++) {
+				if (inds[j] + 1 < prev.size()) {
+					inds[j]++;
+					overflow = false;
+					break;
+				} else {
+					inds[j] = 0;
+				}
+			}
+			if (overflow) break;
+		}
+	}
+	return next;
+}
+
 void run() {
 	int layer = 0;
-
-	// map<string, string> prev;
-	// for (auto a : prims) map[get<0>(a)] = get<0>(a);
 
 	vector<pair<string, string>> prev = prims;
 
 	for (int i = 0; i < layers; i++) {
-		vector<pair<string, string>> next;
-		for (auto el : types) {
-			string name = get<0>(el);
-			int arity = get<1>(el);
-			string alias = get<2>(el);
-
-			vector<int> inds(arity);
-			while (true) {
-				string newname = name + '<';
-				string newalias = alias;
-				for (int j = 0; j < arity - 1; j++) {
-					newname += get<1>(prev[inds[j]]) + ',';
-					newalias += get<1>(prev[inds[j]]);
-				}
-				newname  += get<1>(prev[inds.back()]) + '>';
-				newalias += get<1>(prev[inds.back()]);
-				next.push_back({newname, newalias});
-				put("typedef " + newname + ' ' + newalias + ';');
-				bool overflow = true;
-				for (int j = 0; j < arity; j++) {
-					if (inds[j] + 1 < prev.size()) {
-						inds[j]++;
-						overflow = false;
-						break;
-					} else {
-						inds[j] = 0;
-					}
-				}
-				if (overflow) break;
-			}
-		}
-		prev = next;
+		prev = nextLayer(prev);
+		for (auto a : prev)
+			(outfile ? out : cout) << "typedef " <<
+				get<0>(a) << ' ' << get<1>(a) << ';' << endl;
 	}
 }
 
 int main(int argc, char *argv[]) {
-	infile = argc > 1;
-	outfile = argc > 2;
+	infile = argc > 2;
+	outfile = argc > 3;
 	if (argc > 1) layers = stoi(argv[1]);
 	if (argc > 2) in.open(argv[2]);
 	if (argc > 3) out.open(argv[3]);
