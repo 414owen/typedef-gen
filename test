@@ -5,10 +5,9 @@ long -> l
 long long -> ll
 
 unsigned -> u
-unsigned ling -> ul
+unsigned long -> ul
 unsigned long long -> ull
 
 vector<1> v
 map<2> m
-pair<2> m
-tuple<2-4> t
+pair<2> p

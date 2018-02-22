@@ -10,7 +10,7 @@ bool infile = false, outfile = false;
 ifstream in;
 ofstream out;
 
-int layers = 1;
+int layers = 2;
 // [name, alias]
 vector<pair<string, string>> prims;
 // [name, arity, alias]
@@ -59,7 +59,7 @@ void interpret() {
 			int start = stoi(strt[0]), end;
 			if (strt.size() == 1) end = start;
 			else end = stoi(strt[1]);
-			for (int i = start; i < end; i++) {
+			for (int i = start; i <= end; i++) {
 				types.push_back({strl[0], i, strs[1]});
 			}
 		} else if (strs.size() != 0) {
@@ -85,11 +85,10 @@ void run() {
 			string alias = get<2>(el);
 
 			vector<int> inds(arity);
-			for (int j = 0; j < arity; j++) inds.push_back(0);
 			while (true) {
 				bool overflow = true;
 				for (int j = 0; j < arity; j++) {
-					if (inds[j] < prev.size()) {
+					if (inds[j] + 1 < prev.size()) {
 						inds[j]++;
 						overflow = false;
 						break;
@@ -102,16 +101,17 @@ void run() {
 					string newname = name + '<';
 					string newalias = alias;
 					for (int j = 0; j < arity - 1; j++) {
-						newname += get<0>(prev[inds[i]]) + ',';
-						newalias += get<1>(prev[inds[i]]);
+						newname += get<1>(prev[inds[j]]) + ',';
+						newalias += get<1>(prev[inds[j]]);
 					}
-					newname  += get<0>(prev[inds.back()]) + '>';
+					newname  += get<1>(prev[inds.back()]) + '>';
 					newalias += get<1>(prev[inds.back()]);
 					next.push_back({newname, newalias});
 					put("typedef " + newname + ' ' + newalias + ';');
 				}
 			}
 		}
+		prev = next;
 	}
 }
 
@@ -120,6 +120,7 @@ int main(int argc, char *argv[]) {
 	outfile = argc > 2;
 	if (argc > 1) in.open(argv[1]);
 	if (argc > 2) out.open(argv[2]);
+	if (argc > 3) layers = stoi(argv[3]);
 	interpret();
 	run();
 }
