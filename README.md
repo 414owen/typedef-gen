@@ -49,9 +49,10 @@ typedef std::vector<vll> vvll;
 
 typedef std::map<mci,vc> mmcivc;
 typedef std::map<mii,vc> mmiivc;
+
 ...
 
-and so on, all the way down to that master of types:
+and so on, all the way down to those master of types:
 
 typedef std::tuple<tcllll,tllllll,tllllll> ttclllltlllllltllllll;
 typedef std::tuple<tillll,tllllll,tllllll> ttilllltlllllltllllll;
@@ -78,7 +79,7 @@ Rename `u` or `ull` so `ull` doesn't start with the former.
 
 ### Explanation
 
-This is because `tullu` could mean `tuple<unsigned long long, unsigned`, or
+This is because `tullu` could mean `tuple<unsigned long long, unsigned>`, or
 `tuple<unsigned, long long, unsigned>` (notice the extra comma). The solution to
 this is not to abbreviations that start with the whole of another abbreviation
 (in this exmaple `ull` starts with `u`) in grammars which generate
