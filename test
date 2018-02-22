@@ -8,4 +8,7 @@ unsigned -> u
 unsigned ling -> ul
 unsigned long long -> ull
 
-vector<>
+vector<1> v
+map<2> m
+pair<2> m
+tuple<2-4> t
