@@ -65,33 +65,36 @@ void interpret() {
 	}
 }
 
-vector<pair<string, string>> nextLayer(vector<pair<string, string>> prev) {
-	vector<pair<string, string>> next;
-	for (auto el : types) {
-		string name = get<0>(el);
-		int arity = get<1>(el);
-		string alias = get<2>(el);
+pair<string, string> new_type(vector<int> inds, tuple<string, int, string> t,
+		vector<pair<string, string>> prev) {
+	string name = get<0>(t);
+	int arity = get<1>(t);
+	string alias = get<2>(t);
+	string newname = name + '<';
+	string newalias = alias;
+	for (int j = 0; j < arity - 1; j++) {
+		newname += get<1>(prev[inds[j]]) + ',';
+		newalias += get<1>(prev[inds[j]]);
+	}
+	newname  += get<1>(prev[inds.back()]) + '>';
+	newalias += get<1>(prev[inds.back()]);
+	return {newname, newalias};
+}
 
-		vector<int> inds(arity);
+vector<pair<string, string>> next_layer(vector<pair<string, string>> prev) {
+	vector<pair<string, string>> next;
+
+	for (auto el : types) {
+		vector<int> inds(get<1>(el));
 		while (true) {
-			string newname = name + '<';
-			string newalias = alias;
-			for (int j = 0; j < arity - 1; j++) {
-				newname += get<1>(prev[inds[j]]) + ',';
-				newalias += get<1>(prev[inds[j]]);
-			}
-			newname  += get<1>(prev[inds.back()]) + '>';
-			newalias += get<1>(prev[inds.back()]);
-			next.push_back({newname, newalias});
+			next.push_back(new_type(inds, el, prev));
 			bool overflow = true;
-			for (int j = 0; j < arity; j++) {
+			for (int j = 0; j < get<1>(el); j++) {
 				if (inds[j] + 1 < prev.size()) {
 					inds[j]++;
 					overflow = false;
 					break;
-				} else {
-					inds[j] = 0;
-				}
+				} else inds[j] = 0;
 			}
 			if (overflow) break;
 		}
@@ -101,11 +104,9 @@ vector<pair<string, string>> nextLayer(vector<pair<string, string>> prev) {
 
 void run() {
 	int layer = 0;
-
 	vector<pair<string, string>> prev = prims;
-
 	for (int i = 0; i < layers; i++) {
-		prev = nextLayer(prev);
+		prev = next_layer(prev);
 		for (auto a : prev)
 			(outfile ? out : cout) << "typedef " <<
 				get<0>(a) << ' ' << get<1>(a) << ';' << endl;
