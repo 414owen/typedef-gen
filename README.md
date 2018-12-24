@@ -1,4 +1,9 @@
-# Typedef-Gen
+<div align="center">
+	<p>
+	   <img src="https://owen.cafe/typegen-anim.069ff0ce.svg" height="150">
+	</p>
+	<h1>Typedef-Gen</h1>
+</div>
 
 Generate typedefs programatically from a grammar file.
 
